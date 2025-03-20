@@ -1,2 +1,4 @@
-Read this file test,
-Kompilator 2025
+Lexo a;
+Lexo b;
+c = a*2;
+Afisho c; 
