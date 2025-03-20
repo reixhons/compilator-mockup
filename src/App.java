@@ -6,8 +6,7 @@ import java.util.Map;
 import java.util.Scanner;
 
 public class App {
-    public static void main(String[] args) throws Exception {
-        
+       public static void main(String[] args) throws Exception {
         
         String filePath = "src/file.txt";
         Map<String, Double> variables = new HashMap<>();
@@ -33,7 +32,7 @@ public class App {
             for (String command : commands) {
                 command = command.trim();
                 if (!command.isEmpty()) {
-                    // Ekzekuto funskionin
+                    interpretCommand(command, variables, scanner);
                 }
             }
             
@@ -43,8 +42,40 @@ public class App {
             scanner.close();
         }
     }
-
-       private static double evaluateExpression(String expression, Map<String, Double> variables) {
+    
+    private static void interpretCommand(String command, Map<String, Double> variables, Scanner scanner) {
+        if (command.startsWith("Lexo ")) {
+            String varName = command.substring(5).trim();
+            System.out.print("Vendos vleren " + varName + ": ");
+            double value = scanner.nextDouble();
+            variables.put(varName, value);
+            
+        } else if (command.startsWith("Afisho ")) {
+            String varName = command.substring(7).trim();
+            if (variables.containsKey(varName)) {
+                System.out.println(varName + " = " + variables.get(varName));
+            } else {
+                System.out.println("Error: Variabla '" + varName + "' nuk eshte definuar");
+            }
+            
+        } else if (command.contains("=")) {
+            String[] parts = command.split("=", 2);
+            String varName = parts[0].trim();
+            String expression = parts[1].trim();
+            
+            try {
+                double result = evaluateExpression(expression, variables);
+                variables.put(varName, result);
+            } catch (Exception e) {
+                System.out.println("Error ne evaluimin e shprehjes: " + expression);
+                System.out.println(e.getMessage());
+            }
+        } else {
+            System.out.println("Komande e panjohur: " + command);
+        }
+    }
+    
+    private static double evaluateExpression(String expression, Map<String, Double> variables) {
         if (expression.contains("+")) {
             String[] parts = expression.split("\\+");
             return getValueOf(parts[0].trim(), variables) + getValueOf(parts[1].trim(), variables);
@@ -65,7 +96,7 @@ public class App {
             return getValueOf(expression, variables);
         }
     }
-
+    
     private static double getValueOf(String term, Map<String, Double> variables) {
         try {
             return Double.parseDouble(term);
